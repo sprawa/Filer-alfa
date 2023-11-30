@@ -1,4 +1,4 @@
-package project.chaos.filer.users;
+package project.chaos.filer.user;
 
 
 import jakarta.persistence.Entity;

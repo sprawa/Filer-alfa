@@ -1,6 +1,5 @@
-package project.chaos.filer.users;
+package project.chaos.filer.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,4 +1,4 @@
-package project.chaos.filer.users;
+package project.chaos.filer.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -1,4 +1,4 @@
-package project.chaos.filer.users;
+package project.chaos.filer.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
