@@ -20,6 +20,7 @@ public class FileItemsService {
                         .id(item.getId())
                         .fileName(item.getFileName())
                         .folder(item.isFolder())
-                        .build()).collect(Collectors.toList());
+                        .build())
+                .toList();
     }
 }

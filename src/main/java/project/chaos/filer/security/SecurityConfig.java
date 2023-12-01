@@ -34,7 +34,7 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
                         .requestMatchers("/user").authenticated()
-                        .requestMatchers("/files/**").hasRole("USER")
+                        .requestMatchers("/files/**", "/token").hasRole("USER")
                 )
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)

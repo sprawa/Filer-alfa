@@ -9,4 +9,5 @@ import java.util.Collection;
 public interface FileItemsRepository extends JpaRepository<FileItem, Integer> {
 
     Collection<FileItem> findByOwnerAndRootId(String owner, Integer rootId);
+    Collection<FileItem> findByOwnerAndIdIn(String owner, Collection<Integer> ids);
 }
