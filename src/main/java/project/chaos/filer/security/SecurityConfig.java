@@ -30,10 +30,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(
                                 "/h2-console/**",
-                                "/user/registration"
+                                "/user/registration",
+                                "/error"
                         ).permitAll()
                         .requestMatchers("/user").authenticated()
-                        .requestMatchers("/hello").hasRole("USER")
+                        .requestMatchers("/files/**").hasRole("USER")
                 )
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
