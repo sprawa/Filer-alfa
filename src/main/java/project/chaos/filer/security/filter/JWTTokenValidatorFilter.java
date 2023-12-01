@@ -14,10 +14,14 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import project.chaos.filer.security.SecurityConstants;
+import project.chaos.filer.security.ViewerAuthenticationToken;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class JWTTokenValidatorFilter  extends OncePerRequestFilter {
 
@@ -27,20 +31,19 @@ public class JWTTokenValidatorFilter  extends OncePerRequestFilter {
         String jwt = request.getHeader(SecurityConstants.JWT_HEADER);
         if (null != jwt) {
             try {
-                SecretKey key = Keys.hmacShaKeyFor(
-                        SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
-
-                Claims claims = Jwts.parserBuilder()
-                        .setSigningKey(key)
-                        .build()
-                        .parseClaimsJws(jwt)
-                        .getBody();
-
-                String email = String.valueOf(claims.get("email"));
+                Claims claims = getClaims(jwt);
                 String role = (String) claims.get("role");
+                Authentication auth;
 
-                Authentication auth = new UsernamePasswordAuthenticationToken(email, null,
-                        AuthorityUtils.commaSeparatedStringToAuthorityList(role));
+                if(role.equals("ROLE_USER")) {
+                    String email = String.valueOf(claims.get("email"));
+                    auth = new UsernamePasswordAuthenticationToken(email, null,
+                            AuthorityUtils.commaSeparatedStringToAuthorityList(role));
+                } else if(role.equals("ROLE_VIEWER")) {
+                    auth = new ViewerAuthenticationToken((ArrayList<Integer>) claims.get("fileIds"));
+                } else {
+                    throw new BadCredentialsException("Invalid Token received!");
+                }
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (Exception e) {
@@ -48,6 +51,17 @@ public class JWTTokenValidatorFilter  extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private Claims getClaims(String jwt) {
+        SecretKey key = Keys.hmacShaKeyFor(
+                SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
+
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(jwt)
+                .getBody();
     }
 
     @Override

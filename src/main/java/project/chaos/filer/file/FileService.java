@@ -25,6 +25,7 @@ public class FileService {
                 .rootId(rootId)
                 .folder(false)
                 .build();
+
         fileItemRepository.save(item);
         fileStorageService.saveFile(file, email);
     }

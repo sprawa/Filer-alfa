@@ -3,6 +3,7 @@ package project.chaos.filer.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,7 +37,9 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
                         .requestMatchers("/user").authenticated()
-                        .requestMatchers("/files/**", "/token").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET,"/files/**").authenticated()
+                        .requestMatchers(HttpMethod.POST,"/files/**").hasRole("USER")
+                        .requestMatchers("/token").hasRole("USER")
                 )
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)

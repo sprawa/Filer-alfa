@@ -36,8 +36,8 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
 
         if (auth instanceof UsernamePasswordAuthenticationToken) {
             jwt = jwt.claim("email", auth.getName());
-        } else if(auth instanceof ViewerAuthenticationToken) {
-            jwt = jwt.claim("fileIds", ((ViewerAuthenticationToken) auth).getFileIds());
+        } else if(auth instanceof ViewerAuthenticationToken viewer) {
+            jwt = jwt.claim("fileIds", viewer.getFileIds());
         }
 
         response.setHeader(SecurityConstants.JWT_HEADER, jwt.signWith(key).compact());
