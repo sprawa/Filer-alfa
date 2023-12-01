@@ -6,11 +6,13 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import project.chaos.filer.security.SecurityConstants;
+import project.chaos.filer.security.ViewerAuthenticationToken;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
@@ -23,18 +25,22 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (null != authentication) {
-            SecretKey key = Keys.hmacShaKeyFor(SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
-            String jwt = Jwts.builder().setIssuer("Project Chaos").setSubject("JWT Token")
-                    .claim("email", authentication.getName())
-                    .claim("role", authentication.getAuthorities().stream().findFirst().map(GrantedAuthority::getAuthority).orElse(null))
-                    .setIssuedAt(new Date())
-                    .setExpiration(new Date((new Date()).getTime() + 30000000))
-                    .signWith(key).compact();
-            response.setHeader(SecurityConstants.JWT_HEADER, jwt);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        SecretKey key = Keys.hmacShaKeyFor(SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
+
+        var jwt =  Jwts.builder().setIssuer("Project Chaos").setSubject("JWT Token")
+                .claim("role", auth.getAuthorities().stream().findFirst().map(GrantedAuthority::getAuthority).orElse(null))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + 30000000));
+
+
+        if (auth instanceof UsernamePasswordAuthenticationToken) {
+            jwt = jwt.claim("email", auth.getName());
+        } else if(auth instanceof ViewerAuthenticationToken) {
+            jwt = jwt.claim("fileIds", ((ViewerAuthenticationToken) auth).getFileIds());
         }
 
+        response.setHeader(SecurityConstants.JWT_HEADER, jwt.signWith(key).compact());
         filterChain.doFilter(request, response);
     }
 
