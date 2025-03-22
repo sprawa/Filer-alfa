@@ -1,0 +1,51 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 64px);
+  padding: 2rem;
+  background-color: #f5f5f5;
+}
+
+mat-card {
+  width: 100%;
+  max-width: 400px;
+}
+
+mat-card-header {
+  margin-bottom: 1rem;
+}
+
+mat-card-title {
+  font-size: 1.5rem !important;
+  margin-bottom: 0 !important;
+}
+
+.form-field {
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+button[type="submit"] {
+  min-width: 120px;
+}
+
+mat-progress-bar {
+  margin-top: 1rem;
+}
+
+.red-text {
+  color: #f44336;
+  margin-top: 1rem;
+  text-align: center;
+}

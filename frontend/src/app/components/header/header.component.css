@@ -1,0 +1,62 @@
+nav {
+    background-color: #2196f3;
+    padding: 0 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.spacer {
+    flex: 1 1 auto;
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.2rem;
+    color: white;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.brand-logo mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+}
+
+.brand-logo:hover {
+    opacity: 0.9;
+}
+
+.right {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.right li a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.right li a:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.right li.active a {
+    background: rgba(255, 255, 255, 0.1);
+}

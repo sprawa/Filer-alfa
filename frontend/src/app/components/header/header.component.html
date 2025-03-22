@@ -1,9 +1,15 @@
-<nav>
-    <div class="nav-wrapper">
-        <a class="brand-logo">Filer</a>
-        <ul class="right">
-            <li routerLinkActive="active"><a routerLink="/login">Sign In</a></li>
-            <li routerLinkActive="active"><a routerLink="/register">Sign Up</a></li>
-        </ul>
-    </div>
-</nav>
+<mat-toolbar color="primary">
+    <a mat-button routerLink="/" class="brand-logo">
+        <mat-icon>folder</mat-icon>
+        <span>Filer</span>
+    </a>
+    <span class="spacer"></span>
+    <a mat-button routerLink="/login" routerLinkActive="active">
+        <mat-icon>login</mat-icon>
+        Sign In
+    </a>
+    <a mat-button routerLink="/register" routerLinkActive="active">
+        <mat-icon>person_add</mat-icon>
+        Sign Up
+    </a>
+</mat-toolbar>

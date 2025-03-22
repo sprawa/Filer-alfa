@@ -1,6 +1,41 @@
-<div>
-    <span>Enter token: </span><input> <button>Go!</button>
-    <div class="upload-link">
-        <a routerLink="/upload">Upload Files</a>
-    </div>
+<div class="home-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Welcome to Filer</mat-card-title>
+      <mat-card-subtitle>Your personal file management system</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p>Easily manage and organize your files with our intuitive interface.</p>
+      
+      <div class="action-buttons">
+        <a mat-raised-button color="primary" routerLink="/files">
+          <mat-icon>folder</mat-icon>
+          My Files
+        </a>
+        <a mat-raised-button color="accent" routerLink="/upload">
+          <mat-icon>upload</mat-icon>
+          Upload Files
+        </a>
+      </div>
+
+      <div class="features">
+        <h3>Features:</h3>
+        <ul>
+          <li>
+            <mat-icon>folder_shared</mat-icon>
+            Organize files in folders
+          </li>
+          <li>
+            <mat-icon>cloud_upload</mat-icon>
+            Easy drag-and-drop uploads
+          </li>
+          <li>
+            <mat-icon>security</mat-icon>
+            Secure file storage
+          </li>
+        </ul>
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>

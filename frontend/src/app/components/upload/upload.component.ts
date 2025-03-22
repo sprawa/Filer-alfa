@@ -1,99 +1,98 @@
 import { Component } from '@angular/core';
-import { HttpClient, HttpEventType, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { FileService } from '../../services/file.service';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-upload',
-  templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.css'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressBarModule,
+    MatSnackBarModule
+  ],
+  templateUrl: './upload.component.html',
+  styleUrls: ['./upload.component.css']
 })
 export class UploadComponent {
-  files: File[] = [];
-  uploading = false;
+  isDragging = false;
   uploadProgress: { [key: string]: number } = {};
-  apiUrl = 'http://localhost:8080/files';
-  error: string | null = null;
+  uploadError: string | null = null;
+  protected readonly Object = Object;
 
   constructor(
-    private http: HttpClient,
-    private authService: AuthService,
-    private router: Router
+    private fileService: FileService,
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {}
 
-  onFileSelected(event: any) {
-    const selectedFiles = event.target.files;
-    this.files = Array.from(selectedFiles);
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
   }
 
   onDrop(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
-    const droppedFiles = event.dataTransfer?.files;
-    if (droppedFiles) {
-      this.files = Array.from(droppedFiles);
+    this.isDragging = false;
+
+    const files = event.dataTransfer?.files;
+    if (files) {
+      this.uploadFiles(files);
     }
   }
 
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  removeFile(index: number) {
-    this.files.splice(index, 1);
-  }
-
-  async uploadFiles() {
-    if (this.files.length === 0) return;
-    
-    const token = this.authService.getToken();
-    if (!token) {
-      this.error = 'No authentication token found. Please log in.';
-      return;
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      this.uploadFiles(input.files);
     }
+  }
 
-    this.error = null;
-    this.uploading = true;
-    
-    const headers = new HttpHeaders().set('Authorization', token);
-    let successCount = 0;
-    
-    for (const file of this.files) {
-      const formData = new FormData();
-      formData.append('file', file);
+  uploadFiles(files: FileList) {
+    Array.from(files).forEach(file => {
+      this.uploadProgress[file.name] = 0;
       
-      try {
-        await this.http.post(this.apiUrl, formData, {
-          headers,
-          reportProgress: true,
-          observe: 'events'
-        }).subscribe(event => {
-          if (event.type === HttpEventType.UploadProgress && event.total) {
-            this.uploadProgress[file.name] = Math.round(100 * event.loaded / event.total);
-          } else if (event.type === HttpEventType.Response) {
-            successCount++;
-            if (successCount === this.files.length) {
-              // All files uploaded successfully
-              this.router.navigate(['/files']);
-            }
+      this.fileService.uploadFile(file, (progress: number) => {
+        this.uploadProgress[file.name] = progress;
+      }).subscribe({
+        next: () => {
+          this.snackBar.open(`${file.name} uploaded successfully`, 'Close', {
+            duration: 3000,
+            horizontalPosition: 'end'
+          });
+          if (Object.values(this.uploadProgress).every(p => p === 100)) {
+            setTimeout(() => {
+              this.router.navigate(['/']);
+            }, 1000);
           }
-        });
-        
-        console.log(`Successfully uploaded ${file.name}`);
-      } catch (error) {
-        console.error(`Error uploading ${file.name}:`, error);
-        this.uploadProgress[file.name] = -1;
-        this.error = 'Failed to upload file. Please try again.';
-      }
-    }
-    
-    this.uploading = false;
-    if (!this.error) {
-      this.files = [];
-    }
+        },
+        error: (error: HttpErrorResponse) => {
+          console.error('Upload failed:', error);
+          this.uploadError = `Failed to upload ${file.name}`;
+          this.snackBar.open(`Failed to upload ${file.name}`, 'Close', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+    });
   }
 }
