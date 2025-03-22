@@ -1,6 +1,7 @@
 package project.chaos.filer.file;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,5 +29,17 @@ public class FileService {
 
         fileItemRepository.save(item);
         fileStorageService.saveFile(file, email);
+    }
+
+    public Resource download(Integer id) {
+        var fileItem = fileItemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("File not found"));
+        
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!fileItem.getOwner().equals(email)) {
+            throw new RuntimeException("Access denied");
+        }
+
+        return fileStorageService.loadFile(fileItem.getFileName(), email);
     }
 }

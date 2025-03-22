@@ -69,4 +69,20 @@ export class FileService {
       catchError(error => this.handleError(error))
     );
   }
+
+  downloadFile(fileId: number): Observable<Blob> {
+    const token = this.authService.getToken();
+    if (!token) {
+      this.authService.handleAuthError();
+      return throwError(() => new Error('No authentication token found'));
+    }
+
+    const headers = new HttpHeaders().set('Authorization', token);
+    return this.http.get(`${this.apiUrl}/${fileId}`, {
+      headers,
+      responseType: 'blob'
+    }).pipe(
+      catchError(error => this.handleError(error))
+    );
+  }
 }

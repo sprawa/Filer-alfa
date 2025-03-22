@@ -34,12 +34,22 @@
       <div class="files-grid" *ngIf="!loading && files.length > 0">
         <mat-card class="file-item" *ngFor="let file of files" 
                   [class.folder]="file.folder"
-                  (click)="file.folder ? navigateToFolder(file.id) : null">
+                  (click)="file.folder ? navigateToFolder(file.id) : downloadFile(file, $event)">
           <mat-card-content class="file-content">
-            <mat-icon class="file-icon" [color]="file.folder ? 'accent' : 'primary'">
-              {{ file.folder ? 'folder' : 'insert_drive_file' }}
-            </mat-icon>
-            <span class="file-name">{{ file.fileName }}</span>
+            <div class="file-info">
+              <mat-icon class="file-icon" [color]="file.folder ? 'accent' : 'primary'">
+                {{ file.folder ? 'folder' : 'insert_drive_file' }}
+              </mat-icon>
+              <span class="file-name">{{ file.fileName }}</span>
+            </div>
+            <button *ngIf="!file.folder" 
+                    mat-icon-button 
+                    color="primary"
+                    (click)="downloadFile(file, $event)"
+                    class="download-button"
+                    matTooltip="Download file">
+              <mat-icon>download</mat-icon>
+            </button>
           </mat-card-content>
         </mat-card>
       </div>

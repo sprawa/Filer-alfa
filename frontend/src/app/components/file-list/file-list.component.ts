@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-file-list',
@@ -18,7 +19,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatTooltipModule
   ],
   templateUrl: './file-list.component.html',
   styleUrls: ['./file-list.component.css']
@@ -67,5 +69,44 @@ export class FileListComponent implements OnInit {
 
   goBack() {
     this.loadFiles(undefined);
+  }
+
+  downloadFile(file: FileItem, event: Event) {
+    event.stopPropagation(); // Prevent folder navigation if file is in a folder
+    
+    if (file.folder) {
+      return; // Don't download folders
+    }
+
+    this.fileService.downloadFile(file.id).subscribe({
+      next: (blob) => {
+        // Create a URL for the blob
+        const url = window.URL.createObjectURL(blob);
+        
+        // Create a temporary link element
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = file.fileName; // Set the file name
+        
+        // Append to body, click, and remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up the URL
+        window.URL.revokeObjectURL(url);
+        
+        this.snackBar.open('File downloaded successfully', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'end'
+        });
+      },
+      error: (err) => {
+        this.snackBar.open('Failed to download file', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'end'
+        });
+      }
+    });
   }
 }
