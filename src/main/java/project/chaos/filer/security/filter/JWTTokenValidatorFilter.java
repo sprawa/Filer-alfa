@@ -23,7 +23,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class JWTTokenValidatorFilter  extends OncePerRequestFilter {
+public class JWTTokenValidatorFilter extends OncePerRequestFilter {
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getServletPath().startsWith("/h2-console") || request.getServletPath().equals("/user") || request.getServletPath().equals("/user/registration");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -62,10 +67,5 @@ public class JWTTokenValidatorFilter  extends OncePerRequestFilter {
                 .build()
                 .parseClaimsJws(jwt)
                 .getBody();
-    }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getServletPath().equals("/user") || request.getServletPath().equals("/user/registration");
     }
 }

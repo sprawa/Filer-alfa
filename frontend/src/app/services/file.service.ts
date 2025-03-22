@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEventType, HttpHeaders } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { HttpClient, HttpEventType, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, map, catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 
 export interface FileItem {
@@ -20,22 +20,33 @@ export class FileService {
     private authService: AuthService
   ) { }
 
+  private handleError(error: HttpErrorResponse) {
+    if (error.status === 401 || error.status === 403) {
+      this.authService.handleAuthError();
+    }
+    return throwError(() => error);
+  }
+
   getFiles(folderId?: number): Observable<FileItem[]> {
     const token = this.authService.getToken();
     if (!token) {
-      throw new Error('No authentication token found');
+      this.authService.handleAuthError();
+      return throwError(() => new Error('No authentication token found'));
     }
 
     const headers = new HttpHeaders().set('Authorization', token);
     const url = folderId ? `${this.apiUrl}/items?rootId=${folderId}` : `${this.apiUrl}/items`;
     
-    return this.http.get<FileItem[]>(url, { headers });
+    return this.http.get<FileItem[]>(url, { headers }).pipe(
+      catchError(error => this.handleError(error))
+    );
   }
 
   uploadFile(file: File, onProgress: (progress: number) => void): Observable<any> {
     const token = this.authService.getToken();
     if (!token) {
-      throw new Error('No authentication token found');
+      this.authService.handleAuthError();
+      return throwError(() => new Error('No authentication token found'));
     }
 
     const formData = new FormData();
@@ -54,7 +65,8 @@ export class FileService {
           onProgress(progress);
         }
         return event;
-      })
+      }),
+      catchError(error => this.handleError(error))
     );
   }
 }

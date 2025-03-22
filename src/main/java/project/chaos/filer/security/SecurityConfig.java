@@ -34,6 +34,9 @@ public class SecurityConfig {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/h2-console/**"))
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(
                                 "/h2-console/**",
@@ -47,7 +50,6 @@ public class SecurityConfig {
                 )
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new CustomTokenValidatorFilter(tokenRepository), JWTTokenValidatorFilter.class)
