@@ -1,0 +1,37 @@
+<div class="file-list-container">
+  <div class="header">
+    <h2>Files</h2>
+    <div class="actions">
+      <button *ngIf="currentFolder" (click)="goBack()" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+      <a routerLink="/upload" class="upload-button">
+        <i class="fas fa-upload"></i> Upload Files
+      </a>
+    </div>
+  </div>
+
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <div class="loading" *ngIf="loading">
+    <i class="fas fa-spinner fa-spin"></i> Loading...
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && files.length === 0">
+    <i class="fas fa-folder-open"></i>
+    <p>No files found in this folder</p>
+  </div>
+
+  <div class="files-grid" *ngIf="!loading && files.length > 0">
+    <div class="file-item" *ngFor="let file of files" 
+         [class.folder]="file.folder"
+         (click)="file.folder ? navigateToFolder(file.id) : null">
+      <div class="file-icon">
+        <i class="fas" [class.fa-folder]="file.folder" [class.fa-file]="!file.folder"></i>
+      </div>
+      <div class="file-name">{{ file.fileName }}</div>
+    </div>
+  </div>
+</div>

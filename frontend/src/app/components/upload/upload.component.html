@@ -1,0 +1,49 @@
+<div class="upload-container">
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+  </div>
+  
+  <div class="upload-area" 
+       (dragover)="onDragOver($event)" 
+       (drop)="onDrop($event)">
+    
+    <div class="upload-prompt" *ngIf="files.length === 0">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <h3>Drag and drop files here</h3>
+      <p>or</p>
+      <label class="file-input-label">
+        Choose Files
+        <input type="file" 
+               multiple 
+               (change)="onFileSelected($event)" 
+               style="display: none;">
+      </label>
+    </div>
+
+    <div class="file-list" *ngIf="files.length > 0">
+      <div class="file-item" *ngFor="let file of files; let i = index">
+        <div class="file-info">
+          <i class="fas fa-file"></i>
+          <span class="file-name">{{file.name}}</span>
+          <span class="file-size">{{(file.size / 1024 / 1024).toFixed(2)}} MB</span>
+        </div>
+        <button class="remove-file" (click)="removeFile(i)" [disabled]="uploading">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="progress-bar" *ngIf="uploadProgress[file.name] !== undefined">
+          <div class="progress" 
+               [style.width.%]="uploadProgress[file.name]"
+               [class.error]="uploadProgress[file.name] === -1">
+          </div>
+        </div>
+      </div>
+
+      <button class="upload-button" 
+              (click)="uploadFiles()" 
+              [disabled]="uploading || files.length === 0">
+        <i class="fas fa-upload"></i>
+        {{ uploading ? 'Uploading...' : 'Upload Files' }}
+      </button>
+    </div>
+  </div>
+</div>

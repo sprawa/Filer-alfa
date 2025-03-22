@@ -3,7 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { UserService } from '../../services/user.service'; // Import UserService
+import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,8 @@ export class LoginComponent {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private userService: UserService // Inject UserService
+    private userService: UserService,
+    private authService: AuthService
   ) { }
 
   onSubmit() {
@@ -39,8 +41,8 @@ export class LoginComponent {
         // Extract the JWT token from the header
         const token = response.headers.get('Authorization');
         if (token) {
-          // Store the token in local storage
-          localStorage.setItem('token', token);
+          // Store the token using AuthService
+          this.authService.setToken(token);
 
           // Redirect to the home page or another appropriate route
           this.router.navigate(['/home']);
