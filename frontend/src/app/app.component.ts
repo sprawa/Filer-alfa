@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './components/header/header.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,9 @@ import { HeaderComponent } from './components/header/header.component';
   imports: [
     CommonModule,
     RouterOutlet,
-    HeaderComponent]
+    HeaderComponent,
+    FormsModule
+    ]
 })
 export class AppComponent {
   title = 'frontend';

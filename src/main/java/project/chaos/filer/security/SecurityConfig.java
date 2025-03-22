@@ -18,17 +18,22 @@ import project.chaos.filer.security.filter.CustomTokenValidatorFilter;
 import project.chaos.filer.security.filter.JWTTokenGeneratorFilter;
 import project.chaos.filer.security.filter.JWTTokenValidatorFilter;
 import project.chaos.filer.token.TokenRepository;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@CrossOrigin
 public class SecurityConfig {
 
     private final TokenRepository tokenRepository;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(
