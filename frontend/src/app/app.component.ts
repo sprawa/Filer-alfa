@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './components/header/header.component';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,8 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     RouterOutlet,
     HeaderComponent,
-    FormsModule
+    FormsModule,
+    HttpClientModule // Add HttpClientModule to imports
     ]
 })
 export class AppComponent {

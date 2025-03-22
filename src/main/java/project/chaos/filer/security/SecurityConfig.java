@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@CrossOrigin
 public class SecurityConfig {
 
     private final TokenRepository tokenRepository;
