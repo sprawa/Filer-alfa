@@ -54,13 +54,9 @@ export class LoginComponent {
     this.loading = true;
     this.loginFailed = false;
 
-    // Encode username and password
-    const encodedUsername = encodeURIComponent(this.username);
-    const encodedPassword = encodeURIComponent(this.password);
-
-    // Basic Authentication header
+    // Basic Authentication header - do not URL encode the credentials
     const headers = new HttpHeaders({
-      Authorization: 'Basic ' + btoa(encodedUsername + ':' + encodedPassword)
+      Authorization: 'Basic ' + btoa(this.username + ':' + this.password)
     });
 
     // Send request to the /user endpoint
@@ -80,25 +76,22 @@ export class LoginComponent {
           // Redirect to the home page or another appropriate route
           this.router.navigate(['/files']);
         } else {
-          this.loginFailed = true;
-          this.snackBar.open('Login failed: Token not found', 'Close', {
-            duration: 3000,
-            horizontalPosition: 'end'
-          });
-          console.error('Token not found in response header');
+          this.handleLoginError();
         }
         this.loading = false;
       },
       error: (error) => {
-        // Handle login error
-        console.error('Login failed', error);
-        this.loginFailed = true;
+        this.handleLoginError();
         this.loading = false;
-        this.snackBar.open('Login failed: Invalid credentials', 'Close', {
-          duration: 3000,
-          horizontalPosition: 'end'
-        });
       }
+    });
+  }
+
+  private handleLoginError() {
+    this.loginFailed = true;
+    this.snackBar.open('Invalid username or password', 'Close', {
+      duration: 3000,
+      horizontalPosition: 'end'
     });
   }
 }
